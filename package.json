@@ -17,10 +17,13 @@
   "private": false,
   "dependencies": {
     "@types/clipboardy": "^1.1.0",
+    "@types/execa": "^0.9.0",
     "@types/fs-extra": "^5.0.4",
     "@types/node": "^10.12.18",
+    "arch": "^2.1.1",
     "clipboardy": "^1.2.3",
     "colorful-chalk-logger": "^0.3.0",
+    "execa": "^1.0.0",
     "fs-extra": "^7.0.1"
   },
   "devDependencies": {

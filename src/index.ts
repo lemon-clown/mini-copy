@@ -3,18 +3,24 @@ import { CopyOption, copy as realCopy } from './copy'
 import { PasteOption, paste as realPaste } from './paste'
 
 
-const defaultCopyCommandPath: string = [
-  '/mnt/c/Windows/System32/clip.exe',
-  '/c/Windows/System32/clip.exe',
-  'C:\\Windows\\System32\\clip.exe',
-].filter(p => fs.existsSync(p))[0]
+interface CommandItem {
+  path: string
+  args?: string[]
+}
 
 
-const defaultPasteCommandPath: string = [
-  '/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe',
-  '/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe',
-  'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe',
-].filter(p => fs.existsSync(p))[0]
+const defaultCopyCommandItem: CommandItem = [
+  { path: '/mnt/c/Windows/System32/clip.exe' },
+  { path: '/c/Windows/System32/clip.exe' },
+  { path: 'C:\\Windows\\System32\\clip.exe' },
+].filter(p => fs.existsSync(p.path))[0]
+
+
+const defaultPasteCommandItem: CommandItem = [
+  { path: '/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe', args: [ '-Command', 'Get-Clipboard'] },
+  { path: '/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe', args: [ '-Command', 'Get-Clipboard'] },
+  { path: 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe', args: [ '-Command', 'Get-Clipboard'] },
+].filter(p => fs.existsSync(p.path))[0]
 
 
 const defaultLineSeparator: string = (() => {
@@ -29,21 +35,35 @@ const defaultLineSeparator: string = (() => {
  * copy content to system clipboard.
  * @param content           the content you want to write into system clipboard.
  * @param option
- * @param copyCommandPath   the path of clip.exe (in windows)
+ * @param copyCommandItem
  */
-export const copy = async (content: string, option: Partial<CopyOption> = {}, copyCommandPath?: string) => {
-  if (copyCommandPath == null) copyCommandPath = defaultCopyCommandPath
-  return realCopy(copyCommandPath, content, option)
+export const copy = async (content: string,
+                           option: Partial<CopyOption> = {},
+                           copyCommandItem?: CommandItem) => {
+  if (copyCommandItem == null) {
+    option.copyCommandPath = defaultCopyCommandItem.path
+    option.copyCommandArgs = defaultCopyCommandItem.args || []
+  } else {
+    option.copyCommandPath = copyCommandItem.path
+    option.copyCommandArgs = copyCommandItem.args || []
+  }
+  return realCopy(content, option)
 }
 
 
 /**
  * get the data from system clipboard
- * @param pasteCommandPath  the path where the system call is located
  * @param option
+ * @param pasteCommandItem
  */
-export const paste = async (option: Partial<PasteOption> = {}, pasteCommandPath?: string) => {
-  if (pasteCommandPath == null) pasteCommandPath = defaultPasteCommandPath
+export const paste = async (option: Partial<PasteOption> = {}, pasteCommandItem?: CommandItem) => {
+  if (pasteCommandItem == null) {
+    option.pasteCommandPath = defaultPasteCommandItem.path
+    option.pasteCommandArgs = defaultPasteCommandItem.args || []
+  } else {
+    option.pasteCommandPath = pasteCommandItem.path
+    option.pasteCommandArgs = pasteCommandItem.args || []
+  }
   if (option.lineSeparator == null) option.lineSeparator = defaultLineSeparator
-  return realPaste(pasteCommandPath, option as PasteOption)
+  return realPaste(option as PasteOption)
 }

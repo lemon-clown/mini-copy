@@ -1,14 +1,18 @@
+import execa from 'execa'
 import clipboardy from 'clipboardy'
 import { ColorfulChalkLogger } from 'colorful-chalk-logger'
-const wcp = require('clipboardy/lib/windows.js')
 
 
 /*
- * @member lineSeparator    the system's line separator
- * @member logger           if specified, will logger some information in the process.
+ * @member lineSeparator      the system's line separator
+ * @member pasteCommandPath   the path where the system call is located
+ * @member pasteCommandArgs   the arguments of the command
+ * @member logger             if specified, will logger some information in the process.
  */
 export interface PasteOption {
   lineSeparator: string
+  pasteCommandPath?: string
+  pasteCommandArgs?: string[]
   logger?: ColorfulChalkLogger
 }
 
@@ -27,18 +31,17 @@ function processContent(content: string, lineSeparator: string): string {
 
 /**
  * get the data from system clipboard
- * @param pasteCommandPath  the path where the system call is located
  * @param option
  */
-export async function paste(pasteCommandPath: string,
-                            option: PasteOption): Promise<string> {
-  const { logger, lineSeparator } = option
+export async function paste( option: PasteOption): Promise<string> {
+  const { logger, lineSeparator, pasteCommandPath, pasteCommandArgs=[] } = option
 
   if (pasteCommandPath != null) {
     // is windows or wsl, use clipboardy (as powershell Get-Clipboard will return messy code).
-    if (logger != null) logger.debug(`[paste] try: clipboardy/lib/windows.js`)
+    if (logger != null) logger.debug(`[paste] try: ${pasteCommandPath} ${pasteCommandArgs.join(' ')}`)
     try {
-      const content: string = wcp.pasteSync({stripEof: false}).stdout
+      let content: string = await execa.stdout(pasteCommandPath, pasteCommandArgs, { stripEof: false })
+      if (/powershell/.test(pasteCommandPath)) content = content.replace(/^([^]*?)(?:\r\n|\n\r|[\n\r])$/, '$1')
       return processContent(content, lineSeparator)
     } catch (error) {
       if (logger != null) logger.debug(error)
@@ -46,6 +49,6 @@ export async function paste(pasteCommandPath: string,
   }
 
   if (logger != null) logger.debug('[paste] try: clipboardy')
-  const content: string = clipboardy.readSync()
+  const content: string = await clipboardy.read()
   return processContent(content, lineSeparator)
 }
