@@ -1,4 +1,5 @@
 `mini-copy` based on [clipboardy](https://www.npmjs.com/package/clipboardy), and it support sharing the clipboard with windows and wsl.
+But sometimes there has some messy code problem when use both the terminal of wsl and windows (for example, copy content from cmd.exe, and run demo3 in windows terminal), to solve this problem, you could try copy the `node_modules/clipboardy/fallbacks/windows/clipboard_*.exe`(depends on your machine's architecture) to `/mnt/<d|e|f|g>/clipboard.exe`.
 
 
 # install
