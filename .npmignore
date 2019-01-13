@@ -1,0 +1,7 @@
+.idea/
+src/
+demo/
+screenshots/
+tsconfig.json
+.gitignore
+.editorconfig

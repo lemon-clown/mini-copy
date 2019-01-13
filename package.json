@@ -1,0 +1,30 @@
+{
+  "name": "mini-copy",
+  "version": "0.1.0",
+  "description": "access the system clipboard (also share clipboard in wsl with windows).",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "repository": "git@github.com:lemon-clown/mini-copy.git",
+  "author": "lemon-clown",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc --declaration"
+  },
+  "keywords": [
+    "clipboard",
+    "wsl/windows"
+  ],
+  "private": false,
+  "dependencies": {
+    "@types/clipboardy": "^1.1.0",
+    "@types/fs-extra": "^5.0.4",
+    "@types/node": "^10.12.18",
+    "clipboardy": "^1.2.3",
+    "colorful-chalk-logger": "^0.3.0",
+    "fs-extra": "^7.0.1"
+  },
+  "devDependencies": {
+    "ts-node": "^7.0.1",
+    "typescript": "^3.2.2"
+  }
+}

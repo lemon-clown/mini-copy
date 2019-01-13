@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "lib": [ "es2015" ],
+    "target": "es2015",
+    "outDir": "dist/",
+    "module": "commonjs",
+    "noImplicitReturns": false,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictNullChecks": true,
+    "removeComments": true,
+    "noUnusedLocals": false,
+    "esModuleInterop": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "sourceMap": false,
+    "pretty": false
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "dist/",
+    "node_modules/"
+  ]
+}
