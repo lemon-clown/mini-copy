@@ -1,10 +1,11 @@
 import clipboardy from 'clipboardy'
-import { exec } from 'child_process'
 import { ColorfulChalkLogger } from 'colorful-chalk-logger'
+const wcp = require('clipboardy/lib/windows.js')
+
 
 /*
- * @member  lineSeparator     the system's line separator
- * @member logger         if specified, will logger some information in the process.
+ * @member lineSeparator    the system's line separator
+ * @member logger           if specified, will logger some information in the process.
  */
 export interface PasteOption {
   lineSeparator: string
@@ -34,21 +35,17 @@ export async function paste(pasteCommandPath: string,
   const { logger, lineSeparator } = option
 
   if (pasteCommandPath != null) {
-    const cmd = `${ pasteCommandPath } -Command Get-Clipboard`
-    if (logger != null) logger.debug(`try: ${ cmd }`)
+    // is windows or wsl, use clipboardy (as powershell Get-Clipboard will return messy code).
+    if (logger != null) logger.debug(`[paste] try: clipboardy/lib/windows.js`)
     try {
-      let content: string | any = await new Promise((resolve, reject) => {
-        exec(cmd, (error, stdout, stderr) => {
-          if (error != null) return reject(error)
-          if (stderr != null && stderr != '') return reject(stderr)
-          resolve(stdout.replace(/^([^]*?)(?:\r\n|\n\r|[\n\r])$/, '$1'))
-        })
-      })
+      const content: string = wcp.pasteSync({stripEof: false}).stdout
       return processContent(content, lineSeparator)
     } catch (error) {
       if (logger != null) logger.debug(error)
     }
   }
+
+  if (logger != null) logger.debug('[paste] try: clipboardy')
   const content: string = clipboardy.readSync()
   return processContent(content, lineSeparator)
 }

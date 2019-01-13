@@ -1,6 +1,6 @@
 import clipboardy from 'clipboardy'
-import { exec } from 'child_process'
 import { ColorfulChalkLogger } from 'colorful-chalk-logger'
+const wcp = require('clipboardy/lib/windows.js')
 
 
 /**
@@ -21,24 +21,16 @@ export async function copy(copyCommandPath: string, content: string, option: Cop
   const { logger } = option
 
   if (copyCommandPath != null) {
-    const cmd = `${ copyCommandPath }`
-    if (logger != null) logger.debug(`try: ${ cmd }`)
+    // is windows or wsl, use clipboardy (as powershell Get-Clipboard will return messy code).
+    if (logger != null) logger.debug(`[copy] try: clipboardy/lib/windows.js`)
     try {
-      await new Promise((resolve, reject) => {
-        exec(cmd, (error, stdout, stderr) => {
-          if (error != null) return reject(error)
-          if (stderr != null && stderr != '') return reject(stderr)
-          resolve(stdout)
-        })
-          .stdin
-          .end(content)
-      })
+      wcp.copySync({ input: content })
       return
     } catch (error) {
       if (logger != null) logger.debug(error)
     }
   }
 
-  if (logger != null) logger.debug('try: clipboardy')
+  if (logger != null) logger.debug('[copy] try: clipboardy')
   clipboardy.writeSync(content)
 }
