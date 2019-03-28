@@ -1,6 +1,6 @@
 {
   "name": "mini-copy",
-  "version": "0.1.4",
+  "version": "0.1.6",
   "description": "access the system clipboard (also share clipboard in wsl with windows).",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -22,7 +22,7 @@
     "@types/node": "^10.12.18",
     "arch": "^2.1.1",
     "clipboardy": "^1.2.3",
-    "colorful-chalk-logger": "^0.3.0",
+    "colorful-chalk-logger": "^0.3.2",
     "execa": "^1.0.0",
     "fs-extra": "^7.0.1"
   },
