@@ -25,7 +25,7 @@ const defaultCopyCommandItem: CommandItem = [
   { path: '/mnt/c/Windows/System32/clip.exe' },
   { path: '/c/Windows/System32/clip.exe' },
   { path: 'C:\\Windows\\System32\\clip.exe' },
-].filter(p => fs.existsSync(p.path))[0]
+].filter(p => fs.existsSync(p.path))[0] || {}
 
 
 const defaultPasteCommandItem: CommandItem = [
@@ -44,7 +44,7 @@ const defaultPasteCommandItem: CommandItem = [
   { path: '/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe', args: [ '-Command', 'Get-Clipboard'] },
   { path: '/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe', args: [ '-Command', 'Get-Clipboard'] },
   { path: 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe', args: [ '-Command', 'Get-Clipboard'] },
-].filter(p => fs.existsSync(p.path))[0]
+].filter(p => fs.existsSync(p.path))[0] || {}
 
 
 const defaultLineSeparator: string = (() => {
