@@ -1,6 +1,7 @@
 import execa from 'execa'
 import clipboardy from 'clipboardy'
 import { ColorfulChalkLogger } from 'colorful-chalk-logger'
+import { write } from './fake-clipboard'
 
 
 /**
@@ -9,6 +10,7 @@ import { ColorfulChalkLogger } from 'colorful-chalk-logger'
 export interface CopyOption {
   copyCommandPath?: string
   copyCommandArgs?: string[]
+  fakeClipboard?: string
   logger?: ColorfulChalkLogger
 }
 
@@ -19,7 +21,7 @@ export interface CopyOption {
  * @param option
  */
 export async function copy(content: string, option: CopyOption) {
-  const { logger, copyCommandPath, copyCommandArgs=[] } = option
+  const { logger, copyCommandPath, copyCommandArgs=[], fakeClipboard } = option
 
   if (copyCommandPath != null) {
     // is windows or wsl, use clipboardy (as powershell Get-Clipboard will return messy code).
@@ -32,6 +34,14 @@ export async function copy(content: string, option: CopyOption) {
     }
   }
 
-  if (logger != null) logger.debug('[copy] try: clipboardy')
-  await clipboardy.write(content)
+  try {
+    if (logger != null) logger.debug('[copy] try: clipboardy')
+    await clipboardy.write(content)
+    return
+  } catch (error) {
+    if (logger != null) logger.debug(error)
+  }
+
+  if (fakeClipboard == null) return
+  await write(content, fakeClipboard, logger)
 }

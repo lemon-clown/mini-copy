@@ -1,6 +1,7 @@
 import execa from 'execa'
 import clipboardy from 'clipboardy'
 import { ColorfulChalkLogger } from 'colorful-chalk-logger'
+import { read } from './fake-clipboard'
 
 
 /*
@@ -13,6 +14,7 @@ export interface PasteOption {
   lineSeparator: string
   pasteCommandPath?: string
   pasteCommandArgs?: string[]
+  fakeClipboard?: string
   logger?: ColorfulChalkLogger
 }
 
@@ -34,7 +36,7 @@ function processContent(content: string, lineSeparator: string): string {
  * @param option
  */
 export async function paste( option: PasteOption): Promise<string> {
-  const { logger, lineSeparator, pasteCommandPath, pasteCommandArgs=[] } = option
+  const { logger, lineSeparator, pasteCommandPath, pasteCommandArgs=[], fakeClipboard } = option
 
   if (pasteCommandPath != null) {
     // is windows or wsl, use clipboardy (as powershell Get-Clipboard will return messy code).
@@ -48,7 +50,14 @@ export async function paste( option: PasteOption): Promise<string> {
     }
   }
 
-  if (logger != null) logger.debug('[paste] try: clipboardy')
-  const content: string = await clipboardy.read()
-  return processContent(content, lineSeparator)
+  try {
+    if (logger != null) logger.debug('[paste] try: clipboardy')
+    const content: string = await clipboardy.read()
+    return processContent(content, lineSeparator)
+  } catch (error) {
+    if (logger != null) logger.debug(error)
+  }
+
+  if (fakeClipboard == null) return ''
+  return await read(fakeClipboard, logger)
 }
